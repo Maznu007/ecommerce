@@ -3,10 +3,20 @@ import Product from "../../models/Product";
 
 export default async function handle(req, res) {
   await initMongoose();
+
+  const { ids } = req.query;
+
+  if (ids) {
+    const idsArray = ids.split(",");
+
+    const products = await Product.find({
+      _id: { $in: idsArray },
+    }).exec();
+
+    res.json(products);
+    return;
+  }
+
   const products = await Product.find().exec();
   res.json(products);
 }
-
-export default async function handle(req, res) {
-  await initMongoose();
-  res.json(await Product.find().exec());}
