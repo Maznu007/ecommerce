@@ -15,8 +15,8 @@ export default async function handle(req, res) {
 
     res.json(products);
     return;
-  }
-
+  } 
+// const abs
   const products = await Product.find().exec();
   res.json(products);
 }
