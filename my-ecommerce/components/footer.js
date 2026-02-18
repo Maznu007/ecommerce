@@ -2,65 +2,57 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useContext } from "react";
 import { ProductsContext } from "@/components/ProductsContext";
+import { Home, ShoppingBag } from "lucide-react";
 
 export default function Footer() {
   const router = useRouter();
   const path = router.pathname;
-  const {selectedProducts} = useContext(ProductsContext);
+  const { selectedProducts } = useContext(ProductsContext);
+
+  const navItems = [
+    { href: "/", icon: Home, label: "Home" },
+    { href: "/checkout", icon: ShoppingBag, label: "Cart", badge: selectedProducts.length },
+  ];
 
   return (
-    <footer className="fixed bottom-0 left-0 w-full bg-white p-5 flex justify-center space-x-12 border-t border-gray-300">
-
-      <Link href="/" className="flex flex-col items-center">
-        <div
-          className={
-            (path === "/" ? "text-emerald-500 " : "") +
-            "flex justify-center items-center flex-col"
-          }
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="size-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
-            />
-          </svg>
-          <span>Home</span>
+    <footer className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+      <nav className="bg-slate-900/90 backdrop-blur-xl rounded-2xl px-8 py-4 shadow-2xl shadow-slate-900/20 border border-white/10">
+        <div className="flex items-center gap-8">
+          {navItems.map((item) => {
+            const isActive = path === item.href;
+            const Icon = item.icon;
+            
+            return (
+              <Link key={item.href} href={item.href} className="relative group">
+                <div className={`flex flex-col items-center gap-1 transition-all duration-300 ${
+                  isActive ? "text-indigo-400" : "text-slate-400 hover:text-white"
+                }`}>
+                  <div className="relative">
+                    <Icon 
+                      size={24} 
+                      strokeWidth={isActive ? 2.5 : 2}
+                      className={`transition-transform duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`}
+                    />
+                    {item.badge > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-rose-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center animate-bounce">
+                        {item.badge}
+                      </span>
+                    )}
+                  </div>
+                  <span className={`text-xs font-medium transition-all duration-300 ${
+                    isActive ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0"
+                  }`}>
+                    {item.label}
+                  </span>
+                </div>
+                {isActive && (
+                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 bg-indigo-400 rounded-full" />
+                )}
+              </Link>
+            );
+          })}
         </div>
-      </Link>
-
-      <Link href="/checkout" className="flex flex-col items-center">
-        <div
-          className={
-            (path === "/checkout" ? "text-emerald-500 " : "") +
-            "flex justify-center items-center flex-col"
-          }
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="size-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
-            />
-          </svg>
-          <span>Cart {selectedProducts.length}</span>
-        </div>
-      </Link>
-
+      </nav>
     </footer>
   );
 }
