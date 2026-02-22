@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-// ✅ Re-export authOptions so API routes can use it
+// 🔥 REQUIRED EXPORT so other API routes can import authOptions
 export { authOptions };
 
 export default NextAuth(authOptions);

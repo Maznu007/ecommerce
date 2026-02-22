@@ -1,8 +1,9 @@
 import { initMongoose } from "@/lib/mongoose";
 import Product from "@/models/Product";
-import { getServerSession } from "next-auth/next";
 
-// ✅ FIXED: Use the REAL NextAuth config, not lib/auth
+// ⭐ FIXED — MUST be from "next-auth", NOT "next-auth/next"
+import { getServerSession } from "next-auth";
+
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 
 export default async function handler(req, res) {
@@ -56,11 +57,13 @@ export default async function handler(req, res) {
     console.log("POST - Body:", req.body);
 
     try {
-      // ⬅️ FIXED: Now pulls session.user.id correctly
+      // ⭐ FIXED — correct NextAuth session usage
       const session = await getServerSession(req, res, authOptions);
 
-      if (!session) {
-        console.log("❌ No session found");
+      console.log("SESSION:", session);
+      console.log("🔥 SESSION DUMP:", JSON.stringify(session, null, 2));
+      if (!session || !session.user?.id) {
+        console.log("❌ No valid session");
         return res.status(401).json({ error: "Not authenticated" });
       }
 
@@ -69,22 +72,17 @@ export default async function handler(req, res) {
       const { productId, rating, comment } = req.body;
 
       if (!productId || !rating) {
-        console.log("❌ Missing fields:", { productId, rating, comment });
-        return res
-          .status(400)
-          .json({ error: "Product ID and rating required" });
+        return res.status(400).json({ error: "Product ID and rating required" });
       }
 
       const product = await Product.findById(productId);
 
       if (!product) {
-        console.log("❌ Product not found:", productId);
         return res.status(404).json({ error: "Product not found" });
       }
 
       console.log("✅ Found product:", product.name);
 
-      // Initialize reviews array if doesn't exist
       if (!product.reviews) {
         product.reviews = [];
       }
@@ -95,7 +93,7 @@ export default async function handler(req, res) {
       );
 
       const newReview = {
-        userId: session.user.id, // <-- NOW VALID
+        userId: session.user.id, // ✔ FIXED: always defined now
         userName: session.user.name || "Anonymous",
         rating: parseInt(rating),
         comment: comment || "",
@@ -110,11 +108,12 @@ export default async function handler(req, res) {
         product.reviews.push(newReview);
       }
 
-      // Recalculate average
+      // Recalculate rating
       const totalRating = product.reviews.reduce(
         (acc, r) => acc + (r.rating || 0),
         0
       );
+
       product.averageRating = totalRating / product.reviews.length;
       product.reviewCount = product.reviews.length;
 

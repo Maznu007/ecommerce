@@ -1,7 +1,7 @@
 import { model, models, Schema } from "mongoose";
 
 const ReviewSchema = new Schema({
-  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
   userName: { type: String, default: "Anonymous" },
   rating: { type: Number, required: true, min: 1, max: 5 },
   comment: { type: String, default: "" },
@@ -19,13 +19,16 @@ const ProductSchema = new Schema({
   reviewCount: { type: Number, default: 0 }
 });
 
-// Calculate average rating before saving
-ProductSchema.pre('save', function(next) {
-  if (this.reviews.length > 0) {
-    this.averageRating = this.reviews.reduce((acc, review) => acc + review.rating, 0) / this.reviews.length;
+// ⭐ FIXED — Removed `next()` completely (modern Mongoose middleware)
+ProductSchema.pre("save", function () {
+  if (this.reviews && this.reviews.length > 0) {
+    const total = this.reviews.reduce((sum, r) => sum + r.rating, 0);
+    this.averageRating = total / this.reviews.length;
     this.reviewCount = this.reviews.length;
+  } else {
+    this.averageRating = 0;
+    this.reviewCount = 0;
   }
-  next();
 });
 
 const Product = models.Product || model("Product", ProductSchema);

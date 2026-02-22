@@ -32,18 +32,17 @@ export const authOptions = {
   session: { strategy: "jwt" },
   secret: process.env.NEXTAUTH_SECRET,
 
-  // ✅ ADD THIS
+  // ⭐ REQUIRED FIX — inject `id` into JWT + session
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id; // store user id in token
+        token.id = user.id;
       }
       return token;
     },
     async session({ session, token }) {
-      if (token?.id) {
-        session.user.id = token.id; // expose id in session
-      }
+      if (!session.user) session.user = {};
+      session.user.id = token.id;
       return session;
     }
   }
