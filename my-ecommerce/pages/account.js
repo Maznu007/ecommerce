@@ -1,22 +1,139 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   User, 
-  Mail, 
   Lock, 
-  Eye, 
-  EyeOff, 
+  Bell, 
+  Shield, 
+  HelpCircle, 
   ArrowRight,
+  Loader2,
+  CheckCircle,
   ShoppingBag,
   Heart,
   MapPin,
-  LogOut,
-  Loader2
+  LogOut
 } from "lucide-react";
 import Link from "next/link";
 
+// Dashboard Component - Client side only
+function Dashboard({ user, onLogout, wishlistCount }) {
+  const menuItems = [
+    { icon: ShoppingBag, label: "My Orders", count: 0, color: "bg-blue-500", href: "/orders" },
+    { icon: Heart, label: "Wishlist", count: wishlistCount, color: "bg-rose-500", href: "/wishlist" },
+    { icon: MapPin, label: "Addresses", count: 0, color: "bg-emerald-500", href: "/addresses" },
+  ];
+
+  return (
+    <div className="min-h-screen bg-slate-50 py-12 px-4">
+      <div className="max-w-2xl mx-auto">
+        {/* Profile Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-3xl shadow-xl p-8 mb-6"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center">
+              <User className="text-indigo-600" size={40} />
+            </div>
+            <div className="flex-1">
+              <h1 className="text-2xl font-bold text-slate-900">{user.name}</h1>
+              <p className="text-slate-600">{user.email}</p>
+            </div>
+            <button
+              onClick={onLogout}
+              className="p-3 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
+              title="Logout"
+            >
+              <LogOut size={24} />
+            </button>
+          </div>
+        </motion.div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          {menuItems.map((item, index) => {
+            const Icon = item.icon;
+            return (
+              <Link href={item.href} key={item.label}>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-white rounded-2xl shadow-lg p-6 text-center cursor-pointer hover:shadow-xl transition-shadow"
+                >
+                  <div className={`w-12 h-12 ${item.color} rounded-xl flex items-center justify-center mx-auto mb-3`}>
+                    <Icon className="text-white" size={24} />
+                  </div>
+                  <p className="text-2xl font-bold text-slate-900">{item.count}</p>
+                  <p className="text-sm text-slate-600">{item.label}</p>
+                </motion.div>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Account Settings */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="bg-white rounded-3xl shadow-xl overflow-hidden"
+        >
+          <div className="p-6 border-b border-slate-100">
+            <h2 className="text-lg font-bold text-slate-900">Account Settings</h2>
+          </div>
+          <div className="divide-y divide-slate-100">
+            {[
+              { label: "Edit Profile", href: "/account/edit", icon: User },
+              { label: "Change Password", href: "/account/password", icon: Lock },
+              { label: "Notification Preferences", href: "/account/notifications", icon: Bell },
+              { label: "Privacy Settings", href: "/account/privacy", icon: Shield },
+              { label: "Help & Support", href: "/help", icon: HelpCircle },
+            ].map((setting) => {
+              const Icon = setting.icon;
+              return (
+                <Link
+                  key={setting.label}
+                  href={setting.href}
+                  className="w-full flex items-center justify-between p-4 hover:bg-slate-50 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon size={20} className="text-slate-400" />
+                    <span className="text-slate-700 font-medium">{setting.label}</span>
+                  </div>
+                  <ArrowRight size={20} className="text-slate-400" />
+                </Link>
+              );
+            })}
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
+}
+
+// Client-side only wrapper for wishlist
+function ClientDashboard({ user, onLogout }) {
+  const [wishlistCount, setWishlistCount] = useState(0);
+  
+  useEffect(() => {
+    // Fetch wishlist count on client side
+    fetch("/api/wishlist")
+      .then(res => res.json())
+      .then(data => {
+        setWishlistCount(data.wishlist?.length || 0);
+      })
+      .catch(err => console.error("Failed to fetch wishlist:", err));
+  }, []);
+
+  return <Dashboard user={user} onLogout={onLogout} wishlistCount={wishlistCount} />;
+}
+
+// Main Account Page
 export default function AccountPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -31,7 +148,12 @@ export default function AccountPage() {
     confirmPassword: ""
   });
 
-  // Show loading state while checking session
+  useEffect(() => {
+    if (status === "unauthenticated" && !isLogin) {
+      // Allow signup view
+    }
+  }, [status, isLogin]);
+
   if (status === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -40,9 +162,9 @@ export default function AccountPage() {
     );
   }
 
-  // If logged in, show dashboard
+  // If logged in, show dashboard with client-side wishlist
   if (session) {
-    return <Dashboard user={session.user} onLogout={() => signOut()} />;
+    return <ClientDashboard user={session.user} onLogout={() => signOut()} />;
   }
 
   const handleSubmit = async (e) => {
@@ -171,7 +293,7 @@ export default function AccountPage() {
                 Email Address
               </label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
                 <input
                   type="email"
                   placeholder="you@example.com"
@@ -203,7 +325,7 @@ export default function AccountPage() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                 >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
             </div>
@@ -234,33 +356,17 @@ export default function AccountPage() {
               )}
             </AnimatePresence>
 
-            {/* Forgot Password (Login only) */}
-            {isLogin && (
-              <div className="text-right">
-                <Link href="/forgot-password" className="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
-                  Forgot password?
-                </Link>
-              </div>
-            )}
-
             {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-2 group"
+              className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-2"
             >
-              {isLoading ? (
-                <Loader2 className="animate-spin" size={20} />
-              ) : (
-                <>
-                  {isLogin ? "Sign In" : "Create Account"}
-                  <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                </>
-              )}
+              {isLoading ? <Loader2 className="animate-spin" size={20} /> : (isLogin ? "Sign In" : "Create Account")}
             </button>
           </form>
 
-          {/* Toggle Login/Sign Up */}
+          {/* Toggle */}
           <p className="text-center mt-6 text-slate-600">
             {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
             <button
@@ -273,97 +379,6 @@ export default function AccountPage() {
               {isLogin ? "Sign Up" : "Sign In"}
             </button>
           </p>
-        </motion.div>
-      </div>
-    </div>
-  );
-}
-
-// Dashboard Component (Shown when logged in)
-function Dashboard({ user, onLogout }) {
-  const menuItems = [
-    { icon: ShoppingBag, label: "My Orders", count: 0, color: "bg-blue-500", href: "/orders" },
-    { icon: Heart, label: "Wishlist", count: 0, color: "bg-rose-500", href: "/wishlist" },
-    { icon: MapPin, label: "Addresses", count: 0, color: "bg-emerald-500", href: "/addresses" },
-  ];
-
-  return (
-    <div className="min-h-screen bg-slate-50 py-12 px-4">
-      <div className="max-w-2xl mx-auto">
-        {/* Profile Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-3xl shadow-xl p-8 mb-6"
-        >
-          <div className="flex items-center gap-4">
-            <div className="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center">
-              <User className="text-indigo-600" size={40} />
-            </div>
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold text-slate-900">{user.name}</h1>
-              <p className="text-slate-600">{user.email}</p>
-            </div>
-            <button
-              onClick={onLogout}
-              className="p-3 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
-              title="Logout"
-            >
-              <LogOut size={24} />
-            </button>
-          </div>
-        </motion.div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          {menuItems.map((item, index) => {
-            const Icon = item.icon;
-            return (
-              <Link href={item.href} key={item.label}>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="bg-white rounded-2xl shadow-lg p-6 text-center cursor-pointer hover:shadow-xl transition-shadow"
-                >
-                  <div className={`w-12 h-12 ${item.color} rounded-xl flex items-center justify-center mx-auto mb-3`}>
-                    <Icon className="text-white" size={24} />
-                  </div>
-                  <p className="text-2xl font-bold text-slate-900">{item.count}</p>
-                  <p className="text-sm text-slate-600">{item.label}</p>
-                </motion.div>
-              </Link>
-            );
-          })}
-        </div>
-
-        {/* Account Settings */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="bg-white rounded-3xl shadow-xl overflow-hidden"
-        >
-          <div className="p-6 border-b border-slate-100">
-            <h2 className="text-lg font-bold text-slate-900">Account Settings</h2>
-          </div>
-          <div className="divide-y divide-slate-100">
-            {[
-              "Edit Profile",
-              "Change Password",
-              "Notification Preferences",
-              "Privacy Settings",
-              "Help & Support"
-            ].map((setting) => (
-              <button
-                key={setting}
-                className="w-full flex items-center justify-between p-4 hover:bg-slate-50 transition-colors text-left"
-              >
-                <span className="text-slate-700">{setting}</span>
-                <ArrowRight size={20} className="text-slate-400" />
-              </button>
-            ))}
-          </div>
         </motion.div>
       </div>
     </div>

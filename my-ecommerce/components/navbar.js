@@ -74,6 +74,8 @@ export default function Navbar() {
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-8">
               {navLinks.map((link) => {
+                // sad
+                
                 const isActive = router.pathname === link.href;
                 const Icon = link.icon;
                 
@@ -101,6 +103,8 @@ export default function Navbar() {
             </nav>
 
             {/* Desktop Actions */}
+            {/* here */}
+            
             <div className="hidden lg:flex items-center gap-4">
               {/* Search Button */}
               <button

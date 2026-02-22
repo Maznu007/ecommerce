@@ -1,21 +1,19 @@
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import Product from "../components/product";
 import { initMongoose } from "@/lib/mongoose";
 import ProductModel from "@/models/Product";
 import Layout from "@/components/layout";
-import { Search, Sparkles, TrendingUp, Zap } from "lucide-react";
-import { motion } from "framer-motion";
-import { useRouter } from "next/router";
+import { Search, Sparkles, TrendingUp, Zap, ArrowRight, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+
 export default function Home({ products }) {
+  const router = useRouter();
   const [phrase, setPhrase] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [isScrolled, setIsScrolled] = useState(false);
-  const router = useRouter();
-  useEffect(() => {
-    if (router.query.search) {
-      setPhrase(router.query.search);
-    }
-  }, [router.query.search]);
+  const [viewAllCategory, setViewAllCategory] = useState(null);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -23,20 +21,45 @@ export default function Home({ products }) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Sync with URL search param
+  useEffect(() => {
+    if (router.query.search) {
+      setPhrase(router.query.search);
+    }
+    if (router.query.category) {
+      setSelectedCategory(router.query.category);
+      setViewAllCategory(router.query.category);
+    }
+  }, [router.query]);
+
   // Filter products
   let filteredProducts = products;
   if (phrase) {
     filteredProducts = products.filter((p) =>
-      p.name.toLowerCase().includes(phrase.toLowerCase()),
+      p.name.toLowerCase().includes(phrase.toLowerCase())
     );
   }
-  if (selectedCategory !== "All") {
-    filteredProducts = filteredProducts.filter(
-      (p) => p.category === selectedCategory,
-    );
+  if (selectedCategory !== "All" && !viewAllCategory) {
+    filteredProducts = filteredProducts.filter((p) => p.category === selectedCategory);
   }
 
   const categories = ["All", ...new Set(products.map((p) => p.category))];
+
+  // Get products for view all modal
+  const viewAllProducts = viewAllCategory 
+    ? products.filter((p) => p.category === viewAllCategory)
+    : [];
+
+  const handleViewAll = (categoryName) => {
+    setViewAllCategory(categoryName);
+    router.push(`/?category=${categoryName}`, undefined, { shallow: true });
+  };
+
+  const closeViewAll = () => {
+    setViewAllCategory(null);
+    setSelectedCategory("All");
+    router.push("/", undefined, { shallow: true });
+  };
 
   return (
     <Layout>
@@ -51,16 +74,13 @@ export default function Home({ products }) {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-4 mb-4">
             <div className="flex-1 relative">
-              <Search
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-                size={20}
-              />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
               <input
                 value={phrase}
                 onChange={(e) => setPhrase(e.target.value)}
                 type="text"
                 placeholder="Search products..."
-                className="w-full bg-white border-2 border-slate-200 rounded-2xl pl-12 pr-4 py-4 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all outline-none text-lg"
+                className="w-full bg-white border-2 border-slate-200 rounded-2xl pl-12 pr-4 py-4 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 outline-none text-lg"
               />
             </div>
           </div>
@@ -70,13 +90,14 @@ export default function Home({ products }) {
             {categories.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                data-active={selectedCategory === cat}
+                onClick={() => {
+                  setSelectedCategory(cat);
+                  setViewAllCategory(null);
+                }}
+                data-active={selectedCategory === cat && !viewAllCategory}
                 className="category-pill whitespace-nowrap"
               >
-                {cat === "All" && (
-                  <Sparkles size={14} className="inline mr-1" />
-                )}
+                {cat === "All" && <Sparkles size={14} className="inline mr-1" />}
                 {cat === "Mobiles" && <Zap size={14} className="inline mr-1" />}
                 {cat}
               </button>
@@ -86,7 +107,7 @@ export default function Home({ products }) {
       </motion.header>
 
       {/* Hero Section */}
-      {!phrase && selectedCategory === "All" && (
+      {!phrase && selectedCategory === "All" && !viewAllCategory && (
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -107,92 +128,150 @@ export default function Home({ products }) {
                 Discover Premium Tech
               </h1>
               <p className="text-indigo-100 text-lg mb-8 max-w-lg">
-                Explore our curated collection of cutting-edge devices designed
-                for the modern lifestyle.
+                Explore our curated collection of cutting-edge devices designed for the modern lifestyle.
               </p>
-              <button
-                onClick={() =>
-                  document
-                    .getElementById("products")
-                    .scrollIntoView({ behavior: "smooth" })
-                }
+              <button 
+                onClick={() => document.getElementById('products').scrollIntoView({ behavior: 'smooth' })}
                 className="bg-white text-indigo-600 px-8 py-4 rounded-2xl font-bold hover:bg-indigo-50 transition-colors shadow-xl"
               >
                 Shop Now
               </button>
             </div>
-
-            {/* Decorative Elements */}
+            
             <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 right-20 w-64 h-64 bg-violet-500/30 rounded-full blur-2xl" />
           </div>
         </motion.section>
       )}
 
-      {/* Products Section */}
-      <div id="products" className="space-y-12 pb-12">
-        {categories
-          .filter((cat) => cat !== "All")
-          .filter(
-            (cat) => selectedCategory === "All" || selectedCategory === cat,
-          )
-          .map((categoryName, idx) => {
-            const categoryProducts = filteredProducts.filter(
-              (p) => p.category === categoryName,
-            );
-            if (categoryProducts.length === 0) return null;
+      {/* View All Modal / Page */}
+      <AnimatePresence>
+        {viewAllCategory && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-slate-50 overflow-y-auto"
+          >
+            {/* Header */}
+            <div className="sticky top-0 bg-white/90 backdrop-blur-xl border-b border-slate-200 z-10">
+              <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={closeViewAll}
+                    className="p-2 hover:bg-slate-100 rounded-xl transition-colors"
+                  >
+                    <ArrowRight className="rotate-180" size={24} />
+                  </button>
+                  <h1 className="text-2xl font-bold text-slate-900 capitalize">
+                    {viewAllCategory}
+                  </h1>
+                  <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-sm font-medium">
+                    {viewAllProducts.length} products
+                  </span>
+                </div>
+                <button
+                  onClick={closeViewAll}
+                  className="p-2 hover:bg-slate-100 rounded-xl transition-colors"
+                >
+                  <X size={24} className="text-slate-600" />
+                </button>
+              </div>
+            </div>
 
-            return (
-              <motion.section
-                key={categoryName}
+            {/* Products Grid */}
+            <div className="max-w-7xl mx-auto px-4 py-8">
+              <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
               >
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-slate-900 capitalize flex items-center gap-2">
-                    {categoryName}
-                    <span className="text-sm font-normal text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
-                      {categoryProducts.length}
-                    </span>
-                  </h2>
-                  <button className="text-indigo-600 font-medium hover:text-indigo-700 transition-colors">
-                    View All →
-                  </button>
-                </div>
+                {viewAllProducts.map((product, index) => (
+                  <motion.div
+                    key={product._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <Product {...product} />
+                  </motion.div>
+                ))}
+              </motion.div>
 
-                <div className="flex gap-6 overflow-x-auto scrollbar-hide pb-4 -mx-4 px-4 snap-x">
-                  {categoryProducts.map((productInfo, index) => (
-                    <motion.div
-                      key={productInfo._id}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                      className="snap-start"
-                    >
-                      <Product {...productInfo} />
-                    </motion.div>
-                  ))}
+              {viewAllProducts.length === 0 && (
+                <div className="text-center py-20">
+                  <p className="text-slate-500">No products found in this category</p>
                 </div>
-              </motion.section>
-            );
-          })}
-
-        {/* Empty State */}
-        {filteredProducts.length === 0 && (
-          <div className="text-center py-20">
-            <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Search size={32} className="text-slate-400" />
+              )}
             </div>
-            <h3 className="text-xl font-bold text-slate-900 mb-2">
-              No products found
-            </h3>
-            <p className="text-slate-500">
-              Try adjusting your search or category filter
-            </p>
-          </div>
+          </motion.div>
         )}
-      </div>
+      </AnimatePresence>
+
+      {/* Products Section (Normal View) */}
+      {!viewAllCategory && (
+        <div id="products" className="space-y-12 pb-12">
+          {categories
+            .filter((cat) => cat !== "All")
+            .filter((cat) => selectedCategory === "All" || selectedCategory === cat)
+            .map((categoryName, idx) => {
+              const categoryProducts = filteredProducts.filter(
+                (p) => p.category === categoryName
+              );
+              if (categoryProducts.length === 0) return null;
+
+              return (
+                <motion.section
+                  key={categoryName}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                >
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-bold text-slate-900 capitalize flex items-center gap-2">
+                      {categoryName}
+                      <span className="text-sm font-normal text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
+                        {categoryProducts.length}
+                      </span>
+                    </h2>
+                    <button 
+                      onClick={() => handleViewAll(categoryName)}
+                      className="text-indigo-600 font-medium hover:text-indigo-700 transition-colors flex items-center gap-1 group"
+                    >
+                      View All 
+                      <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                    </button>
+                  </div>
+
+                  <div className="flex gap-6 overflow-x-auto scrollbar-hide pb-4 -mx-4 px-4 snap-x">
+                    {categoryProducts.slice(0, 4).map((productInfo, index) => (
+                      <motion.div
+                        key={productInfo._id}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="snap-start"
+                      >
+                        <Product {...productInfo} />
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.section>
+              );
+            })}
+
+          {/* Empty State */}
+          {filteredProducts.length === 0 && (
+            <div className="text-center py-20">
+              <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Search size={32} className="text-slate-400" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">No products found</h3>
+              <p className="text-slate-500">Try adjusting your search or category filter</p>
+            </div>
+          )}
+        </div>
+      )}
     </Layout>
   );
 }
