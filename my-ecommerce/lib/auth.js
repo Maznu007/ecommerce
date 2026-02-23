@@ -14,7 +14,6 @@ export const authOptions = {
       async authorize(credentials) {
         await initMongoose();
         const user = await User.findOne({ email: credentials.email });
-
         if (!user) throw new Error("No user found");
 
         const isValid = await bcrypt.compare(credentials.password, user.password);
@@ -24,6 +23,7 @@ export const authOptions = {
           id: user._id.toString(),
           email: user.email,
           name: user.name,
+          image: user.image || ""
         };
       }
     })
@@ -32,18 +32,33 @@ export const authOptions = {
   session: { strategy: "jwt" },
   secret: process.env.NEXTAUTH_SECRET,
 
-  // ⭐ REQUIRED FIX — inject `id` into JWT + session
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (!session.user) session.user = {};
-      session.user.id = token.id;
-      return session;
+callbacks: {
+  async jwt({ token, user }) {
+    // When user logs in, include image
+    if (user) {
+      token.id = user.id;
+      token.name = user.name;
+      token.email = user.email;
+      token.image = user.image;
     }
-  }
+
+    // Always fetch latest data from database
+    const dbUser = await User.findById(token.id);
+    if (dbUser) {
+      token.name = dbUser.name;
+      token.email = dbUser.email;
+      token.image = dbUser.image; // ← THIS WAS NOT WORKING BEFORE
+    }
+
+    return token;
+  },
+
+  async session({ session, token }) {
+    session.user.id = token.id;
+    session.user.name = token.name;
+    session.user.email = token.email;
+    session.user.image = token.image; // ← THIS is what dashboard uses
+    return session;
+  },
+}
 };

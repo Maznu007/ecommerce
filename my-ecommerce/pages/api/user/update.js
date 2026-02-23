@@ -1,6 +1,7 @@
 import { initMongoose } from "@/lib/mongoose";
 import User from "@/models/User";
-import { getSession } from "next-auth/react";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]";
 
 export default async function handler(req, res) {
   if (req.method !== "PUT") {
@@ -8,29 +9,29 @@ export default async function handler(req, res) {
   }
 
   try {
-    const session = await getSession({ req });
-    
+    const session = await getServerSession(req, res, authOptions);
+
     if (!session) {
       return res.status(401).json({ error: "Not authenticated" });
     }
 
     await initMongoose();
-    
-    const { name } = req.body;
-    
-    const updatedUser = await User.findByIdAndUpdate(
+
+    const { name, image } = req.body;
+
+    const user = await User.findByIdAndUpdate(
       session.user.id,
-      { name },
+      { name, image },
       { new: true }
     );
 
-    res.status(200).json({ 
+    return res.status(200).json({
+      success: true,
       message: "Profile updated",
-      user: updatedUser 
+      user
     });
-    
+
   } catch (error) {
-    console.error("Update error:", error);
-    res.status(500).json({ error: "Failed to update profile" });
+    return res.status(500).json({ error: "Failed to update profile" });
   }
 }

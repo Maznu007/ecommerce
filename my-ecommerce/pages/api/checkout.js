@@ -10,7 +10,6 @@ export default async function handler(req,res) {
     res.json('should a post but its not!');
     return;
   }
-
   const {email,name,address,city} = req.body;
   const productsIds = req.body.products.split(',');
   const uniqIds = [...new Set(productsIds)];
