@@ -1,10 +1,12 @@
-📦 ShopHub — Modern Minimal E-Commerce Platform
+📦 ShopHub — Modern Minimal E-Commerce Platform 📦
 
 ShopHub is a fully-featured, clean, minimal e-commerce platform built with Next.js, MongoDB, TailwindCSS, and Next-Auth.
 It includes a complete user shopping experience + a full Admin CMS.
 
-✨ Features at a Glance
-🧑‍💻 User Features
+------------------------------------------------------------------------------------------------------------------------
+
+✨ Features at a Glance ✨
+🧑‍💻 User Features 🧑‍💻
 
 Create an account / Login / Logout
 
@@ -20,7 +22,9 @@ Checkout flow with address
 
 View past orders
 
-🛠️ Admin CMS
+------------------------------------------------------------------------------------------------------------------------
+
+🛠️ Admin CMS 🛠️
 
 Admin auto-detected using admin@yourdomain.com
 
@@ -42,15 +46,7 @@ Manage Orders + Status updates
 
 Real-time updates across the site
 
-🎨 UI / UX
-
-Minimal & premium light theme
-
-Smooth animations (Framer Motion)
-
-Lucide Icons
-
-Clean, modern layout inspired by App Store / Apple style
+------------------------------------------------------------------------------------------------------------------------
 
 🧱 Tech Stack
 Frontend
