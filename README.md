@@ -95,9 +95,43 @@ Admin role handled by email match
 📁 Project Structure 📁
 ----------------------
 
+```
 /pages
   /account
     index.js          → Login / Signup / Dashboard
+    edit.js           → Edit profile
+    password.js       → Change password
+  /admin
+    layout.js         → Admin layout
+    index.js          → Admin dashboard
+    /products
+      index.js        → Product list
+      new.js          → Create product
+      edit/[id].js    → Edit product
+    /orders
+      index.js        → All orders
+      [id].js         → Order details
+    /users
+      index.js        → User list
+
+/api
+  /auth
+    [...nextauth].js  → Auth config
+    signup.js         → User signup
+  products.js         → CRUD products
+  orders.js           → Admin orders API
+  wishlist.js         → Wishlist API
+  upload.js           → Cloudinary upload
+
+/models
+  User.js
+  Product.js
+  Order.js
+
+/lib
+  auth.js
+  mongoose.js
+```
 
 
 ------------------------------------------------------------------------------------------------------------------------
