@@ -94,6 +94,7 @@ Admin role handled by email match
 
 📁 Project Structure 📁
 ----------------------
+
 /pages
   /account
     index.js          → Login / Signup / Dashboard
