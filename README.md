@@ -6,7 +6,9 @@ It includes a complete user shopping experience + a full Admin CMS.
 ------------------------------------------------------------------------------------------------------------------------
 
 ✨ Features at a Glance ✨
+---------------------------
 🧑‍💻 User Features 🧑‍💻
+--------------------
 
 Create an account / Login / Logout
 
@@ -25,6 +27,7 @@ View past orders
 ------------------------------------------------------------------------------------------------------------------------
 
 🛠️ Admin CMS 🛠️
+-----------------
 
 Admin auto-detected using admin@yourdomain.com
 
@@ -48,9 +51,10 @@ Real-time updates across the site
 
 ------------------------------------------------------------------------------------------------------------------------
 
-🧱 Tech Stack
+🧱 Tech Stack 🧱
+------------------
 Frontend
-
+---------
 Next.js 13+
 
 React
@@ -71,7 +75,10 @@ Next-Auth (JWT strategy)
 
 Cloudinary (image uploads)
 
-🔐 Authentication
+------------------------------------------------------------------------------------------------------------------------
+
+🔐 Authentication 🔐
+-------------------
 
 Credentials Provider (email + password)
 
@@ -81,6 +88,12 @@ JWT-based sessions
 
 Automatic session refresh
 
+Admin role handled by email match
+
+------------------------------------------------------------------------------------------------------------------------
+
+📁 Project Structure 📁
+----------------------
 /pages
   /account
     index.js          → Login / Signup / Dashboard
@@ -117,8 +130,10 @@ Automatic session refresh
   auth.js
   mongoose.js
 
-  ☁️ Environment Variables
+------------------------------------------------------------------------------------------------------------------------
 
+☁️ Environment Variables ☁️
+--------------------------- 
 Create a .env.local file:
 
 MONGODB_URL=your_mongodb_connection
@@ -137,7 +152,10 @@ Product images
 
 Supports large image sizes automatically.
 
-🛒 E-Commerce Logic
+------------------------------------------------------------------------------------------------------------------------
+
+🛒 E-Commerce Logic 🛒
+---------------------
 Cart
 
 Add / remove items
@@ -162,7 +180,10 @@ Status (pending → shipped → delivered)
 
 Payment status (Stripe-ready)
 
-🚀 Installation
+------------------------------------------------------------------------------------------------------------------------
+
+🚀 Installation 🚀
+----------------
 1️⃣ Clone the Repository
 git clone https://github.com/yourusername/shophub.git
 cd shophub
@@ -188,7 +209,10 @@ Password: (any password you used during signup)
 
 Admin privileges unlock the full CMS.
 
-🧩 API Endpoints Overview
+------------------------------------------------------------------------------------------------------------------------
+
+🧩 API Endpoints Overview 🧩
+---------------------------
 | Method   | Endpoint          | Description            |
 | -------- | ----------------- | ---------------------- |
 | GET      | /api/products     | Fetch all products     |
@@ -201,7 +225,10 @@ Admin privileges unlock the full CMS.
 | POST     | /api/upload       | Upload image           |
 | GET/POST | /api/wishlist     | Wishlist operations    |
 
-📈 Planned Improvements
+------------------------------------------------------------------------------------------------------------------------
+
+📈 Planned Improvements 📈
+-------------------------
 
 🔵 Stripe payments
 
@@ -215,7 +242,10 @@ Admin privileges unlock the full CMS.
 
 👥 Role-based admin permissions
 
-🏁 Conclusion
+------------------------------------------------------------------------------------------------------------------------
+ 
+🏁 Conclusion 🏁
+--------------
 
 ShopHub is a modern, production-ready e-commerce starter designed with clean UI, smooth UX, scalable architecture, and a complete admin dashboard.
 
