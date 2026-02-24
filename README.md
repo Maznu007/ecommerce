@@ -16,8 +16,9 @@ A fully-featured e-commerce web application built with Next.js, MongoDB, Tailwin
 
 🛠️ Full Admin CMS (Products, Users, Orders, Stats)
 
-
 ☁️ Cloudinary Image Upload
+
+🎨 Minimal & Premium UI (Apple-style Light Theme)
 
 
 ⭐ Live Features Overview
