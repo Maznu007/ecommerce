@@ -32,33 +32,41 @@ export const authOptions = {
   session: { strategy: "jwt" },
   secret: process.env.NEXTAUTH_SECRET,
 
-callbacks: {
-  async jwt({ token, user }) {
-    // When user logs in, include image
-    if (user) {
-      token.id = user.id;
-      token.name = user.name;
-      token.email = user.email;
-      token.image = user.image;
+  callbacks: {
+    async jwt({ token, user }) {
+
+      // When logging in
+      if (user) {
+        token.id = user.id;
+        token.name = user.name;
+        token.email = user.email;
+        token.image = user.image;
+      }
+
+      // Always refresh data from DB
+      const dbUser = await User.findById(token.id);
+      if (dbUser) {
+        token.name = dbUser.name;
+        token.email = dbUser.email;
+        token.image = dbUser.image;
+
+        // ⭐ Mark admin by email
+        token.isAdmin = dbUser.email === "admin@yourdomain.com";
+      }
+
+      return token;
+    },
+
+    async session({ session, token }) {
+      session.user.id = token.id;
+      session.user.name = token.name;
+      session.user.email = token.email;
+      session.user.image = token.image;
+
+      // ⭐ Make admin flag available on frontend
+      session.user.isAdmin = token.isAdmin;
+
+      return session;
     }
-
-    // Always fetch latest data from database
-    const dbUser = await User.findById(token.id);
-    if (dbUser) {
-      token.name = dbUser.name;
-      token.email = dbUser.email;
-      token.image = dbUser.image; // ← THIS WAS NOT WORKING BEFORE
-    }
-
-    return token;
-  },
-
-  async session({ session, token }) {
-    session.user.id = token.id;
-    session.user.name = token.name;
-    session.user.email = token.email;
-    session.user.image = token.image; // ← THIS is what dashboard uses
-    return session;
-  },
-}
+  }
 };
