@@ -24,51 +24,30 @@ A fully-featured e-commerce web application built with Next.js, MongoDB, Tailwin
 🧑‍🤝‍🧑 User Features
 
 Create account
-
 Login / Logout
-<img width="444" height="454" alt="image" src="https://github.com/user-attachments/assets/c30383d8-512c-4898-b75f-fcc55629973a" />
-
 Edit profile (name + profile picture)
-<img width="1085" height="428" alt="image" src="https://github.com/user-attachments/assets/2b578bdf-dcaf-4f4a-8980-276057fd23ce" />
-
-
 Image uploads (Cloudinary)
-
 Manage wishlist
-<img width="1112" height="681" alt="image" src="https://github.com/user-attachments/assets/98a68cbe-4eca-4276-9d8d-6c73d59a4697" />
-
 View orders
-
 Checkout with stored shipping address
-<img width="1087" height="663" alt="image" src="https://github.com/user-attachments/assets/94dc5e63-ff8e-4ac8-9912-b9a2114fb32d" />
 
 🛠️ Admin Features (CMS)
 
 Admin account = admin@yourdomain.com
-
 (Admin role auto-detected based on email)
 
 ✔ Admin Dashboard
-<img width="1913" height="321" alt="image" src="https://github.com/user-attachments/assets/22a6f0a4-017e-4541-a27e-7f27061614fc" />
+
 Revenue
-
 Orders count
-
 Users count
-
 Product count
 
 ✔ Manage Products
-<img width="1906" height="584" alt="image" src="https://github.com/user-attachments/assets/ef154165-4609-471d-9524-9e5d1e174cd8" />
-
 Create new product
-
 Edit existing product
-
 Delete product
-
 Upload product images
-
 Real-time update across homepage
 
 ✔ Manage Users
@@ -78,32 +57,23 @@ View all registered users
 ✔ Manage Orders
 
 View all orders
-
 View order details
-
 Order status updates (pending → shipped → delivered)
 
 🖥️ Tech Stack
 Frontend
 
 Next.js 13+
-
 React
-
 TailwindCSS
-
 Framer Motion (animations)
-
 Lucide Icons
 
 Backend / API
 
 Next.js API Routes
-
 MongoDB + Mongoose
-
 Next-Auth (JWT strategy)
-
 Cloudinary (image uploads)
 
 🔐 Authentication System
@@ -156,47 +126,28 @@ Create a .env.local file:
 
 MONGODB_URL=your_mongodb_connection
 NEXTAUTH_SECRET=your_secret_key
-
 CLOUDINARY_CLOUD=your_cloud_name
 CLOUDINARY_KEY=your_api_key
 CLOUDINARY_SECRET=your_api_secret
 📸 Image Uploads (Cloudinary)
 
-Images are uploaded via:
-
-/api/upload
-
-Admin can upload:
-
-Product images
-
-User profile picture
-
-Cloudinary returns:
-
-secure_url → saved as image path
 🛒 E-Commerce Logic
+
 ✔ Add to cart
 ✔ Update quantities
 ✔ Remove from cart
 ✔ Auto total calculation
+
 📦 Orders System
+
 Order schema includes:
-
 User ID
-
 Products list
-
 Quantities
-
 Prices
-
 Shipping address
-
 Order status
-
 Payment status
-
 Stripe session ID (future-ready)
 
 🛠️ Installation & Setup
