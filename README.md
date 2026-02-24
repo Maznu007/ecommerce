@@ -98,7 +98,7 @@ Admin role handled by email match
 /pages
   /account
     index.js          → Login / Signup / Dashboard
-    edit.js           → Edit profile
+
 
 ------------------------------------------------------------------------------------------------------------------------
 
