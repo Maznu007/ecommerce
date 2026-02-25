@@ -255,4 +255,28 @@ ShopHub is a modern, production-ready e-commerce starter designed with clean UI,
 
 Admin role handled by email match
 
-📁 Project Structure
+<img width="1091" height="872" alt="image" src="https://github.com/user-attachments/assets/02be18e7-93d4-4cd2-b7ff-19278114bbe9" />
+
+<img width="1084" height="886" alt="image" src="https://github.com/user-attachments/assets/0facb191-0444-441f-9ded-9c283c8419fd" />
+
+<img width="1096" height="815" alt="image" src="https://github.com/user-attachments/assets/e9f42ab4-ee5f-42e5-a21d-b66c941fc3ab" />
+
+<img width="1095" height="695" alt="image" src="https://github.com/user-attachments/assets/11e394dd-a4a3-4d7f-8338-790aa4d84002" />
+
+<img width="1068" height="878" alt="image" src="https://github.com/user-attachments/assets/d6e8a600-ceb5-4d4b-b5f5-f44497becc34" />
+
+<img width="1117" height="457" alt="image" src="https://github.com/user-attachments/assets/881ec233-4f70-4f3d-b13d-761b3e7b835d" />
+
+<img width="1081" height="569" alt="image" src="https://github.com/user-attachments/assets/adf0a83d-694c-4a26-94ac-f5a9e08bd4aa" />
+
+<img width="1191" height="656" alt="image" src="https://github.com/user-attachments/assets/9618ce88-1c56-4be3-ad72-0cbd8872a27e" />
+
+<img width="1896" height="716" alt="image" src="https://github.com/user-attachments/assets/93f61c7f-f03d-405a-a65d-af245c70319f" />
+
+<img width="1652" height="734" alt="image" src="https://github.com/user-attachments/assets/e39c36f8-2a5a-403b-baa3-653268a83803" />
+
+<img width="1671" height="693" alt="image" src="https://github.com/user-attachments/assets/88b071b4-ccab-4aa1-8d6e-adf2297f80c2" />
+
+<img width="1656" height="416" alt="image" src="https://github.com/user-attachments/assets/b8791008-939f-4e92-881f-ab9b5338cbdb" />
+
+
