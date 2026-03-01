@@ -17,7 +17,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-// ⭐ LOGIN FORM ─────────────────────────────
+//
+// ⭐ LOGIN FORM
+//
 function LoginForm({ switchMode }) {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -80,7 +82,9 @@ function LoginForm({ switchMode }) {
   );
 }
 
-// ⭐ SIGNUP FORM ─────────────────────────────
+//
+// ⭐ SIGNUP FORM
+//
 function SignupForm({ switchMode }) {
   const router = useRouter();
   const [name, setName] = useState("");
@@ -159,24 +163,47 @@ function SignupForm({ switchMode }) {
   );
 }
 
-// ⭐ DASHBOARD (AFTER LOGIN) ─────────────────────────────
-function Dashboard({ user, onLogout }) {
+//
+// ⭐ DASHBOARD (INCLUDES ORDERS • WISHLIST • ADDRESSES)
+//
+function Dashboard({ user, onLogout, wishlistCount = 0 }) {
   const profileImage = user?.image || "/default-avatar.png";
+
+  const menuCards = [
+    {
+      label: "My Orders",
+      icon: ShoppingBag,
+      color: "bg-blue-500",
+      href: "/account/orders",
+      count: 0,
+    },
+    {
+      label: "Wishlist",
+      icon: Heart,
+      color: "bg-rose-500",
+      href: "/wishlist",
+      count: wishlistCount,
+    },
+    {
+      label: "Addresses",
+      icon: MapPin,
+      color: "bg-emerald-500",
+      href: "/account/addresses",
+      count: 0,
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-slate-50 py-12 px-4">
       <div className="max-w-2xl mx-auto">
 
-        {/* Profile */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-3xl shadow-xl p-8 mb-6"
-        >
+        {/* Profile Header */}
+        <div className="bg-white rounded-3xl shadow-xl p-8 mb-6">
           <div className="flex items-center gap-4">
             <img
               src={profileImage}
-              className="w-20 h-20 rounded-full object-cover border"
+              alt="Profile"
+              className="w-20 h-20 rounded-full object-cover border shadow"
             />
 
             <div className="flex-1">
@@ -186,69 +213,107 @@ function Dashboard({ user, onLogout }) {
 
             <button
               onClick={onLogout}
-              className="p-3 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl"
+              className="p-3 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition"
             >
               <LogOut size={24} />
             </button>
           </div>
-        </motion.div>
+        </div>
 
-        {/* Settings */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-3xl shadow-xl overflow-hidden"
-        >
-          <div className="p-6 border-b border-slate-100">
-            <h2 className="text-lg font-bold">Account Settings</h2>
+        {/* Quick Action Cards */}
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          {menuCards.map((card, idx) => {
+            const Icon = card.icon;
+            return (
+              <Link key={idx} href={card.href}>
+                <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl text-center cursor-pointer transition">
+                  <div
+                    className={`w-12 h-12 ${card.color} rounded-xl flex items-center justify-center mx-auto mb-3`}
+                  >
+                    <Icon className="text-white" size={24} />
+                  </div>
+                  <p className="text-2xl font-bold text-slate-900">{card.count}</p>
+                  <p className="text-sm text-slate-600">{card.label}</p>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Settings List */}
+        <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+          <div className="p-6 border-b">
+            <h2 className="text-lg font-bold text-slate-900">Account Settings</h2>
           </div>
 
-          <div className="divide-y divide-slate-100">
-            <Link href="/account/edit" className="flex items-center justify-between p-4">
+          <div className="divide-y">
+            <Link
+              href="/account/edit"
+              className="flex items-center justify-between p-4 hover:bg-slate-50"
+            >
               <div className="flex items-center gap-3">
                 <User size={20} className="text-slate-400" />
-                <span>Edit Profile</span>
+                <span className="text-slate-700 font-medium">Edit Profile</span>
               </div>
-              <ArrowRight size={18} />
+              <ArrowRight size={20} className="text-slate-400" />
             </Link>
 
-            <Link href="/account/password" className="flex items-center justify-between p-4">
+            <Link
+              href="/account/password"
+              className="flex items-center justify-between p-4 hover:bg-slate-50"
+            >
               <div className="flex items-center gap-3">
                 <Lock size={20} className="text-slate-400" />
-                <span>Change Password</span>
+                <span className="text-slate-700 font-medium">Change Password</span>
               </div>
-              <ArrowRight size={18} />
+              <ArrowRight size={20} className="text-slate-400" />
             </Link>
 
-            <Link href="/account/privacy" className="flex items-center justify-between p-4">
+            <Link
+              href="/account/privacy"
+              className="flex items-center justify-between p-4 hover:bg-slate-50"
+            >
               <div className="flex items-center gap-3">
                 <Shield size={20} className="text-slate-400" />
-                <span>Privacy Settings</span>
+                <span className="text-slate-700 font-medium">Privacy Settings</span>
               </div>
-              <ArrowRight size={18} />
+              <ArrowRight size={20} className="text-slate-400" />
             </Link>
 
-            <Link href="/help" className="flex items-center justify-between p-4">
+            <Link
+              href="/help"
+              className="flex items-center justify-between p-4 hover:bg-slate-50"
+            >
               <div className="flex items-center gap-3">
                 <HelpCircle size={20} className="text-slate-400" />
-                <span>Help & Support</span>
+                <span className="text-slate-700 font-medium">Help & Support</span>
               </div>
-              <ArrowRight size={18} />
+              <ArrowRight size={20} className="text-slate-400" />
             </Link>
           </div>
-        </motion.div>
+        </div>
+
       </div>
     </div>
   );
 }
 
-// ⭐ MAIN ACCOUNT PAGE ─────────────────────────────
+//
+// ⭐ MAIN ACCOUNT PAGE
+//
 export default function AccountPage() {
+  const router = useRouter();
   const { data: session, status } = useSession();
   const [mode, setMode] = useState("login");
-  const router = useRouter();
+  const [wishlistCount, setWishlistCount] = useState(0);
 
   const switchMode = () => setMode(mode === "login" ? "signup" : "login");
+
+  useEffect(() => {
+    fetch("/api/wishlist")
+      .then((res) => res.json())
+      .then((data) => setWishlistCount(data?.wishlist?.length || 0));
+  }, []);
 
   if (status === "loading") {
     return (
@@ -258,13 +323,7 @@ export default function AccountPage() {
     );
   }
 
-  // ⭐ ADMIN -> REDIRECT TO ADMIN PANEL
-  if (session?.user?.email === "admin@yourdomain.com") {
-    router.push("/admin");
-    return null;
-  }
-
-  // Logged OUT → show login/signup
+  // Logged OUT → show login/signup UI
   if (!session) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
@@ -277,11 +336,18 @@ export default function AccountPage() {
     );
   }
 
-  // Logged IN → show dashboard
-  return (
-    <Dashboard
-      user={session.user}
-      onLogout={() => signOut({ callbackUrl: "/account" })}
-    />
-  );
+// ⭐ ADMIN REDIRECT
+if (session?.user?.email === "admin@yourdomain.com") {
+  router.push("/admin");
+  return null;
+}
+
+// ⭐ NORMAL USER DASHBOARD
+return (
+  <Dashboard
+    user={session.user}
+    wishlistCount={wishlistCount}
+    onLogout={() => signOut({ callbackUrl: "/account" })}
+  />
+);
 }
